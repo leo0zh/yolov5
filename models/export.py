@@ -53,9 +53,11 @@ if __name__ == '__main__':
     # TorchScript export
     try:
         print('\nStarting TorchScript export with torch %s...' % torch.__version__)
-        f = opt.weights.replace('.pt', '.torchscript.pt')  # filename
+        f = opt.weights.replace('.pt', '.torchscript.ptl')  # filename
         ts = torch.jit.trace(model, img)
-        ts.save(f)
+        from torch.utils.mobile_optimizer import optimize_for_mobile
+        ts = optimize_for_mobile(ts)
+        ts._save_for_lite_interpreter(f)
         print('TorchScript export success, saved as %s' % f)
     except Exception as e:
         print('TorchScript export failure: %s' % e)
